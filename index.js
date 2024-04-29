@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
 const app = express();
 
@@ -15,7 +15,6 @@ app.get("/", (req, res) => {
 });
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.gjqtths.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
-console.log(uri);
 
 const client = new MongoClient(uri, {
   serverApi: {
@@ -48,6 +47,42 @@ async function run() {
       const result = await itemsCollection
         .find({ email: req.params.email })
         .toArray();
+      res.send(result);
+    });
+
+    app.get("/items/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await itemsCollection.findOne(query);
+      res.send(result);
+    });
+
+    app.put("/items/:id", async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      const filter = { _id: new ObjectId(id) };
+      const updatedItem = req.body;
+      const newItem = {
+        $set: {
+          itemName: updatedItem.itemName,
+          stockStatus: updatedItem.stockStatus,
+          category: updatedItem.category,
+          customization: updatedItem.customization,
+          photoURL: updatedItem.photoURL,
+          price: updatedItem.price,
+          processing_time: updatedItem.processing_time,
+          rating: updatedItem.rating,
+          description: updatedItem.description,
+        },
+      };
+      const result = await itemsCollection.updateOne(filter, newItem);
+      res.send(result);
+    });
+
+    app.delete("/items/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await itemsCollection.deleteOne(query);
       res.send(result);
     });
 
