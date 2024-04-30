@@ -43,7 +43,6 @@ async function run() {
     });
 
     app.get("/myList/:email", async (req, res) => {
-      console.log(req.params.email);
       const result = await itemsCollection
         .find({ email: req.params.email })
         .toArray();
@@ -84,6 +83,11 @@ async function run() {
       const query = { _id: new ObjectId(id) };
       const result = await itemsCollection.deleteOne(query);
       res.send(result);
+    });
+
+    app.get("/items/customization/:value", async (req, res) => {
+      const value = req.params;
+      console.log(value);
     });
 
     // Send a ping to confirm a successful connection
