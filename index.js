@@ -56,6 +56,13 @@ async function run() {
       res.send(result);
     });
 
+    app.get("/categories/:category", async (req, res) => {
+      const result = await itemsCollection
+        .find({ category: req.params.category })
+        .toArray();
+      res.send(result);
+    });
+
     app.put("/items/:id", async (req, res) => {
       const id = req.params.id;
       console.log(id);
